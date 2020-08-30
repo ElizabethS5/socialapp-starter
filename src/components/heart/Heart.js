@@ -9,7 +9,7 @@ function Heart(props) {
     icon = <HeartFilled />;
   }
   return (
-    <div className="Heart">
+    <div className="Heart" onClick={props.toggleLike}>
       <Tooltip title="like">
         <Button className="like-button">{icon}</Button>
         {props.number}

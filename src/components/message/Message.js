@@ -10,13 +10,31 @@ class Message extends React.Component {
     super(props);
     this.state = {
       user: props.user,
+      iLike: props.data.iLike,
+      number: props.data.likes.length,
     };
   }
   componentDidMount() {
     if (this.state.user.username === "") {
     }
   }
+
+  toggleLike = () => {
+    this.setState((currentState) => {
+      let number = currentState.number;
+      if (currentState.iLike) {
+        number -= 1;
+      } else {
+        number += 1;
+      }
+      return { number, iLike: !currentState.iLike };
+    });
+  };
+
   render() {
+    let x = 0;
+    if (this.props.data.iLike) {
+    }
     let path = "/profile/" + this.props.data.username;
     return (
       <div className="Message">
@@ -36,7 +54,11 @@ class Message extends React.Component {
             />
           }
           actions={[
-            <Heart liked={true} number={this.props.data.likes.length} />,
+            <Heart
+              liked={this.state.iLike}
+              number={this.state.number}
+              toggleLike={this.toggleLike}
+            />,
           ]}
         />
       </div>

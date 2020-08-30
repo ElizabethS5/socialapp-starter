@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Menu.css";
-import { withAsyncAction } from "../../HOCs";
 
 class Menu extends React.Component {
   handleLogout = (event) => {
@@ -13,17 +12,17 @@ class Menu extends React.Component {
     return (
       <div id="menu">
         <h1>Kwitter</h1>
-        {/* {this.props.isAuthenticated && ( */}
         <div id="menu-links">
-          <Link to="/messagefeed">Message Feed</Link>
-          <Link to="/" onClick={this.handleLogout}>
+          <Link to="/">Message Feed</Link>
+          <Link to="/signin">Login</Link>
+          <Link to={`/profile/${this.props.username}`}>My Profile</Link>
+          <Link to="/signin" onClick={this.handleLogout}>
             Logout
           </Link>
         </div>
-        {/* )} */}
       </div>
     );
   }
 }
 
-export default withAsyncAction("auth", "logout")(Menu);
+export default Menu;

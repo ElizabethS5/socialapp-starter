@@ -9,6 +9,29 @@ class ApiService {
     this.likesUrl = `${this.baseUrl}/likes`;
   }
 
+  login = (loginData) => {
+    console.log("logging in...", loginData);
+    const url = `${this.baseUrl}/auth/login`;
+    return this.client.post(url, loginData).catch((error) => {
+      console.log(error);
+    });
+    // return fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //   },
+    //   body: JSON.stringify(loginData),
+    // }).then((res) => {
+    //   if (res.ok) {
+    //     return res.json();
+    //   }
+    //   return res.json().then((result) => {
+    //     throw result;
+    //   });
+    // });
+  };
+
   createUser(registrationData) {
     console.log("creating user...", registrationData);
     const url = this.usersUrl;
