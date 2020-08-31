@@ -33,6 +33,7 @@ class App extends React.Component {
         remember: false,
       },
       loggedIn: false,
+      newMessage: "",
     };
   }
 
@@ -47,6 +48,10 @@ class App extends React.Component {
         });
     }
   }
+
+  handleNewMessageChange = (e) => {
+    this.setState({ newMessage: e.target.value });
+  };
 
   handleChange = (e) => {
     const auth = { ...this.state.auth };
@@ -148,6 +153,18 @@ class App extends React.Component {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  createMessage = () => {
+    let text = this.state.newMessage.trim();
+    if (text === "") return;
+    this.client.createMessage(text, this.state.auth.token).then((data) => {
+      console.log(data);
+      this.setState((currentState) => {
+        const messages = [data.data.message, ...currentState.messages];
+        return { messages };
+      });
+    });
   };
 
   getUsers = () => {
@@ -284,6 +301,9 @@ class App extends React.Component {
                 deleteLike={this.deleteLike}
                 token={this.state.auth.token}
                 myUsername={this.state.auth.username}
+                newMesage={this.state.newMessage}
+                handleNewMessageChange={this.handleNewMessageChange}
+                createMessage={this.createMessage}
               />
             )}
           />

@@ -17,12 +17,10 @@ class Message extends React.Component {
       <div className="Message">
         <Comment
           author={
-            <>
-              <Link to={path}>
-                <strong>{this.props.user.displayName}</strong> @
-                {this.props.data.username}
-              </Link>
-            </>
+            <Link to={path}>
+              <strong>{this.props.user.displayName}</strong> @
+              {this.props.data.username}
+            </Link>
           }
           content={this.props.data.text}
           avatar={<Avatar src={pictureSrc} alt="logo" />}

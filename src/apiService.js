@@ -18,7 +18,7 @@ class ApiService {
     });
   };
 
-  logout(token) {
+  logout = (token) => {
     const url = `${this.authUrl}/logout`;
     return this.client
       .get(url, {
@@ -27,7 +27,7 @@ class ApiService {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   createUser = (registrationData) => {
     console.log("creating user...", registrationData);
@@ -37,58 +37,63 @@ class ApiService {
     });
   };
 
-  getUsers() {
+  getUsers = () => {
     console.log("getting users...");
     const url = this.usersUrl + "?limit=10000";
     return this.client(url).catch((err) => {
       console.log(err);
     });
-    // return fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Accept: "application/json",
-    //   },
-    // })
-    //   .then((res) => res.json)
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-  }
+  };
 
-  getUserByUsername(username) {
+  getUserByUsername = (username) => {
     console.log("getting user...", username);
     const url = `${this.usersUrl}/${username}`;
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
-  }
+  };
 
-  getUserPicture(username) {
+  getUserPicture = (username) => {
     console.log("getting picture...", username);
     const url = `${this.usersUrl}/${username}/picture`;
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
-  }
+  };
 
-  getMessages() {
+  getMessages = () => {
     console.log("getting messages...");
     const url = this.messagesUrl + "?limit=10000";
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
-  }
+  };
 
-  getMessageById(messageId) {
+  createMessage = (text, token) => {
+    console.log("sending message...");
+    const url = this.messagesUrl;
+    return this.client
+      .post(
+        url,
+        { text: text },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  getMessageById = (messageId) => {
     console.log("getting message...");
     const url = `${this.messagesUrl}/${messageId}`;
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
-  }
+  };
 
-  like(messageObj, token) {
+  like = (messageObj, token) => {
     console.log("liking...", messageObj, token);
     const url = `${this.likesUrl}`;
     return this.client
@@ -98,9 +103,9 @@ class ApiService {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
-  deleteLike(likeId, token) {
+  deleteLike = (likeId, token) => {
     console.log("deleting like...", likeId, token);
     const url = `${this.likesUrl}/${likeId}`;
     return this.client
@@ -110,7 +115,7 @@ class ApiService {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 }
 
 export default ApiService;

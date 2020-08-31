@@ -1,10 +1,18 @@
 import React from "react";
 import MessageList from "../components/messageList/MessageList";
+import TextBox from "../components/textBox/TextBox";
 
 class MessageFeed extends React.Component {
   render() {
     return (
       <div className="MessageFeed">
+        {this.props.loggedIn && (
+          <TextBox
+            newMesage={this.props.newMessage}
+            handleNewMessageChange={this.props.handleNewMessageChange}
+            createMessage={this.props.createMessage}
+          />
+        )}
         <MessageList
           messages={this.props.messages}
           users={this.props.users}
