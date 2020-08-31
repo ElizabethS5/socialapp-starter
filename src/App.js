@@ -25,15 +25,6 @@ class App extends React.Component {
         updatedAt: "",
         username: "",
       },
-      loggedInUser: {
-        about: "",
-        createdAt: "",
-        displayName: "",
-        googleId: null,
-        pictureLocation: null,
-        updatedAt: "",
-        username: "",
-      },
       auth: {
         username: "",
         token: "",
@@ -43,6 +34,18 @@ class App extends React.Component {
       },
       loggedIn: false,
     };
+  }
+
+  componentDidMount() {
+    this.getUsers();
+    this.getMessages();
+    if (this.getTokenFromLocaleStorage()) {
+      this.client
+        .getUserByUsername(localStorage.getItem("username"))
+        .then((data) => {
+          this.setState({ selectedUser: data.data.user });
+        });
+    }
   }
 
   handleChange = (e) => {
@@ -70,11 +73,31 @@ class App extends React.Component {
         const auth = { ...this.state.auth };
         auth.token = data.data.token;
         auth.password = "";
+        auth.remember = true;
         if (this.state.auth.remember) {
           localStorage.setItem("token", data.data.token);
           localStorage.setItem("username", data.data.username);
         }
-        this.setState({ auth });
+        this.setState({ auth, loggedIn: true });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  handleLogout = (token) => {
+    this.client
+      .logout(token)
+      .then((data) => {
+        console.log(data.data);
+        const auth = { ...this.state.auth };
+        auth.token = "";
+        auth.username = "";
+        if (localStorage.getItem("token")) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("username");
+        }
+        this.setState({ auth, loggedIn: false });
       })
       .catch((error) => {
         console.log(error);
@@ -82,21 +105,21 @@ class App extends React.Component {
   };
 
   handleRegister = (e) => {
-    console.log("register");
+    const registrationObj = {
+      username: this.state.auth.username,
+      displayName: this.state.auth.displayName,
+      password: this.state.auth.password,
+    };
+    this.client
+      .createUser(registrationObj)
+      .then((data) => {
+        console.log(data);
+        this.handleLogin();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-
-  componentDidMount() {
-    this.getUsers();
-    this.getMessages();
-    if (this.getTokenFromLocaleStorage()) {
-      this.client
-        .getUserByUsername(localStorage.getItem("username"))
-        .then((data) => {
-          console.log(data);
-          this.setState({ loggedInUser: data.data.user });
-        });
-    }
-  }
 
   getTokenFromLocaleStorage() {
     if (localStorage.getItem("token")) {
@@ -104,6 +127,7 @@ class App extends React.Component {
       const auth = { ...this.state.auth };
       auth.username = localStorage.getItem("username");
       auth.token = localStorage.getItem("token");
+      auth.remember = true;
       this.setState({ loggedIn: true, auth });
       return true;
     }
@@ -141,7 +165,7 @@ class App extends React.Component {
     this.client
       .getUserByUsername(username)
       .then((data) => {
-        console.log(data.data.user);
+        return this.setState({ selectedUser: data.data.user });
       })
       .catch((error) => {
         console.log(error);
@@ -152,16 +176,60 @@ class App extends React.Component {
     this.setState({ selectUser: userObj });
   };
 
-  likeMessage = (messageId) => {};
+  likeMessage = (messageId, token) => {
+    this.client
+      .like({ messageId: messageId }, token)
+      .then((data) => {
+        this.setState((currentState) => {
+          const messages = [...currentState.messages];
+          const message = messages.find(
+            (message) => message.id === data.data.like.messageId
+          );
+          message.likes.push(data.data.like);
+          message.iLike = true;
+          return { messages };
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  deleteLike = (likeId, token, messageId) => {
+    this.client
+      .deleteLike(likeId, token)
+      .then((data) => {
+        console.log(data.data);
+        this.setState((currentState) => {
+          const messages = [...currentState.messages];
+          const message = messages.find((message) => message.id === messageId);
+          console.log(data.data.id);
+          const index = message.likes.findIndex(
+            (like) => like.id === data.data.id
+          );
+          message.likes.splice(index, 1);
+          message.iLike = false;
+          console.log(message);
+          return { messages };
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   render() {
     return (
       <div className="App">
-        <Menu />
-        <h2>Your favorite microblogging platform</h2>
+        <Menu
+          loggedIn={this.state.loggedIn}
+          username={this.state.auth.username}
+          token={this.state.auth.token}
+          handleLogout={this.handleLogout}
+        />
         {this.state.auth.token !== "" && <Redirect from="/signin" to="/" />}
         {this.state.auth.token === "" && (
-          <Redirect from="/profile/:username" to="/signin" />
+          <Redirect from="/profile/:username" to="/" />
         )}
 
         <Switch>
@@ -188,8 +256,17 @@ class App extends React.Component {
             render={(props) => (
               <Profile
                 {...props}
+                getUser={this.getUser}
                 username={props.match.params.username}
-                user={this.state.selectedUser}
+                selectedUser={this.state.selectedUser}
+                messages={this.state.messages.filter(
+                  (message) => message.username === props.match.params.username
+                )}
+                loggedIn={this.state.loggedIn}
+                likeMessage={this.likeMessage}
+                deleteLike={this.deleteLike}
+                token={this.state.auth.token}
+                myUsername={this.state.auth.username}
               />
             )}
           />
@@ -202,6 +279,11 @@ class App extends React.Component {
                 users={this.state.users}
                 messages={this.state.messages}
                 getUser={(username) => this.getUser(username)}
+                loggedIn={this.state.loggedIn}
+                likeMessage={this.likeMessage}
+                deleteLike={this.deleteLike}
+                token={this.state.auth.token}
+                myUsername={this.state.auth.username}
               />
             )}
           />

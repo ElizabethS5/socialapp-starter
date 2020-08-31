@@ -15,6 +15,7 @@ class LoginOrRegisterForm extends React.Component {
   toggleForm = (e) => {
     this.setState((currentState) => ({ loginForm: !currentState.loginForm }));
   };
+
   render() {
     return (
       <div className="RegisterForm">
@@ -22,10 +23,18 @@ class LoginOrRegisterForm extends React.Component {
           <Form.Item
             name="username"
             label="Username"
-            rules={[{ required: true, message: "Please enter a username" }]}
+            rules={[
+              { required: true, message: "Please enter a username" },
+              {
+                minLength: 3,
+                message:
+                  "Username name must be at least 3 characters in length",
+              },
+            ]}
           >
             <Input
               onChange={this.props.handleChange}
+              minLength={3}
               name="username"
               value={this.props.username}
             />
@@ -36,6 +45,11 @@ class LoginOrRegisterForm extends React.Component {
               label="Display Name"
               rules={[
                 { required: true, message: "Please enter a display name" },
+                {
+                  minLength: 3,
+                  message:
+                    "Display name must be at least 3 characters in length",
+                },
               ]}
             >
               <Input
@@ -69,19 +83,27 @@ class LoginOrRegisterForm extends React.Component {
           </Form.Item>
 
           {this.state.loginForm && (
-            <Button type="primary" onClick={this.props.handleLogin}>
+            <Button
+              className="Button"
+              type="primary"
+              onClick={this.props.handleLogin}
+            >
               Login
             </Button>
           )}
           {!this.state.loginForm && (
-            <Button type="primary" onClick={this.props.handleRegister}>
+            <Button
+              className="Button"
+              type="primary"
+              onClick={this.props.handleRegister}
+            >
               Register
             </Button>
           )}
         </Form>
 
         <div className="or">or</div>
-        <Button onClick={this.toggleForm}>
+        <Button className="Button" onClick={this.toggleForm}>
           {this.state.loginForm
             ? "Create a new account"
             : "Log into existing account"}

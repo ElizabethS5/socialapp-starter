@@ -7,40 +7,35 @@ class ApiService {
     this.usersUrl = `${this.baseUrl}/users`;
     this.messagesUrl = `${this.baseUrl}/messages`;
     this.likesUrl = `${this.baseUrl}/likes`;
+    this.authUrl = `${this.baseUrl}/auth`;
   }
 
   login = (loginData) => {
     console.log("logging in...", loginData);
-    const url = `${this.baseUrl}/auth/login`;
+    const url = `${this.authUrl}/login`;
     return this.client.post(url, loginData).catch((error) => {
       console.log(error);
     });
-    // return fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Accept: "application/json",
-    //   },
-    //   body: JSON.stringify(loginData),
-    // }).then((res) => {
-    //   if (res.ok) {
-    //     return res.json();
-    //   }
-    //   return res.json().then((result) => {
-    //     throw result;
-    //   });
-    // });
   };
 
-  createUser(registrationData) {
-    console.log("creating user...", registrationData);
-    const url = this.usersUrl;
+  logout(token) {
+    const url = `${this.authUrl}/logout`;
     return this.client
-      .post(url, JSON.stringify(registrationData))
+      .get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .catch((error) => {
         console.log(error);
       });
   }
+
+  createUser = (registrationData) => {
+    console.log("creating user...", registrationData);
+    const url = this.usersUrl;
+    return this.client.post(url, registrationData).catch((error) => {
+      console.log(error);
+    });
+  };
 
   getUsers() {
     console.log("getting users...");
@@ -91,6 +86,30 @@ class ApiService {
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
+  }
+
+  like(messageObj, token) {
+    console.log("liking...", messageObj, token);
+    const url = `${this.likesUrl}`;
+    return this.client
+      .post(url, messageObj, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  deleteLike(likeId, token) {
+    console.log("deleting like...", likeId, token);
+    const url = `${this.likesUrl}/${likeId}`;
+    return this.client
+      .delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 

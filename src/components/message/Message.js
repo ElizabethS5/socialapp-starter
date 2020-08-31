@@ -2,38 +2,15 @@ import React from "react";
 import TimeAgo from "react-timeago";
 import Heart from "../heart/Heart";
 import { Link } from "react-router-dom";
-import { Divider, Comment, Avatar } from "antd";
+import { Comment, Avatar } from "antd";
 import logo from "../../logo.svg";
 
 class Message extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: props.user,
-      iLike: props.data.iLike,
-      number: props.data.likes.length,
-    };
-  }
-  componentDidMount() {
-    if (this.state.user.username === "") {
-    }
-  }
-
-  toggleLike = () => {
-    this.setState((currentState) => {
-      let number = currentState.number;
-      if (currentState.iLike) {
-        number -= 1;
-      } else {
-        number += 1;
-      }
-      return { number, iLike: !currentState.iLike };
-    });
-  };
-
   render() {
-    let x = 0;
-    if (this.props.data.iLike) {
+    let pictureSrc = logo;
+    if (this.props.user.pictureLocation) {
+      pictureSrc =
+        "https://socialapp-api.herokuapp.com" + this.props.user.pictureLocation;
     }
     let path = "/profile/" + this.props.data.username;
     return (
@@ -41,23 +18,31 @@ class Message extends React.Component {
         <Comment
           author={
             <>
-              <strong>{this.props.user.displayName}</strong>{" "}
-              <Link to={path}>@{this.props.data.username}</Link>
+              <Link to={path}>
+                <strong>{this.props.user.displayName}</strong> @
+                {this.props.data.username}
+              </Link>
             </>
           }
           content={this.props.data.text}
-          avatar={<Avatar src={logo} alt="logo" />}
+          avatar={<Avatar src={pictureSrc} alt="logo" />}
           datetime={
             <TimeAgo
-              date={this.props.data.createdAt}
-              title={this.props.data.createdAt}
+              date={new Date(this.props.data.createdAt)}
+              title={new Date(this.props.data.createdAt).toLocaleString()}
             />
           }
           actions={[
             <Heart
-              liked={this.state.iLike}
-              number={this.state.number}
-              toggleLike={this.toggleLike}
+              loggedIn={this.props.loggedIn}
+              iLike={this.props.data.iLike}
+              number={this.props.data.likes.length}
+              token={this.props.token}
+              messageId={this.props.data.id}
+              likeMessage={this.props.likeMessage}
+              deleteLike={this.props.deleteLike}
+              likes={this.props.data.likes}
+              myUsername={this.props.myUsername}
             />,
           ]}
         />

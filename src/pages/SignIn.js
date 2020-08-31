@@ -4,7 +4,7 @@ import { Card } from "antd";
 
 function SignIn(props) {
   return (
-    <div className="Home">
+    <div className="SignIn">
       <Card>
         <LoginOrRegisterForm
           handleChange={props.handleChange}

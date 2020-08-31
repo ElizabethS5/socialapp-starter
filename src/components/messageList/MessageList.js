@@ -9,7 +9,6 @@ class MessageList extends React.Component {
     }
     return (
       <div className="MessageList">
-        {/* {JSON.stringify(this.props.users)} */}
         <ul>
           {this.props.messages.map((messageObj, i) => {
             let username = messageObj.username;
@@ -27,7 +26,18 @@ class MessageList extends React.Component {
                 username: "",
               };
             }
-            return <Message key={i} data={messageObj} user={user} />;
+            return (
+              <Message
+                key={i}
+                data={messageObj}
+                user={user}
+                loggedIn={this.props.loggedIn}
+                likeMessage={this.props.likeMessage}
+                deleteLike={this.props.deleteLike}
+                token={this.props.token}
+                myUsername={this.props.myUsername}
+              />
+            );
           })}
         </ul>
       </div>

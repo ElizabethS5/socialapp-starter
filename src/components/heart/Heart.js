@@ -3,18 +3,76 @@ import { Button, Tooltip } from "antd";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import "./Heart.css";
 
-function Heart(props) {
-  let icon = <HeartOutlined />;
-  if (props.liked) {
-    icon = <HeartFilled />;
+class Heart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      iLike: props.iLike,
+      number: props.number,
+      disable: false,
+    };
   }
-  return (
-    <div className="Heart" onClick={props.toggleLike}>
-      <Tooltip title="like">
-        <Button className="like-button">{icon}</Button>
-        {props.number}
-      </Tooltip>
-    </div>
-  );
+
+  componentDidMount() {
+    this.setState((currentState, currentProps) => {
+      if (currentProps.loggedIn) {
+        return { disable: false };
+      } else {
+        return { disable: true };
+      }
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.loggedIn !== this.props.loggedIn) {
+      this.setState((currentState) => ({ disable: !this.props.loggedIn }));
+    }
+    if (
+      prevProps.iLike === this.props.iLike &&
+      prevProps.loggedIn === this.props.loggedIn
+    )
+      return;
+    this.setState((currentState, currentProps) => ({
+      iLike: this.props.iLike,
+      number: this.props.number,
+    }));
+  }
+
+  startLoad() {
+    return this.setState({ disable: true });
+  }
+  endLoad() {
+    return this.setState({ disable: false });
+  }
+
+  toggleLike = () => {
+    this.startLoad();
+    if (!this.state.iLike) {
+      this.props.likeMessage(this.props.messageId, this.props.token);
+    } else {
+      const myLike = this.props.likes.find(
+        (like) => like.username === this.props.myUsername
+      );
+      this.props.deleteLike(myLike.id, this.props.token, myLike.messageId);
+    }
+    this.endLoad();
+  };
+
+  render() {
+    let icon = <HeartOutlined />;
+    if (this.state.iLike) {
+      icon = <HeartFilled />;
+    }
+    return (
+      <div className="Heart" onClick={this.toggleLike}>
+        <Tooltip title={this.state.iLike ? "unlike" : "like"}>
+          <Button className="like-button" disabled={this.state.disable}>
+            {icon}
+          </Button>
+          {this.state.number}
+        </Tooltip>
+      </div>
+    );
+  }
 }
 export default Heart;
