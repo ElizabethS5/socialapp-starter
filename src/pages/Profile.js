@@ -48,6 +48,10 @@ class Profile extends React.Component {
             data={message}
             user={this.props.selectedUser}
             loggedIn={this.props.loggedIn}
+            token={this.props.token}
+            likeMessage={this.props.likeMessage}
+            deleteLike={this.props.deleteLike}
+            myUsername={this.props.myUsername}
           />
         ))}
       </div>
