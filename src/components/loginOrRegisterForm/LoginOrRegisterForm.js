@@ -26,7 +26,7 @@ class LoginOrRegisterForm extends React.Component {
             rules={[
               { required: true, message: "Please enter a username" },
               {
-                minLength: 3,
+                min: 3,
                 message:
                   "Username name must be at least 3 characters in length",
               },
@@ -46,7 +46,7 @@ class LoginOrRegisterForm extends React.Component {
               rules={[
                 { required: true, message: "Please enter a display name" },
                 {
-                  minLength: 3,
+                  min: 3,
                   message:
                     "Display name must be at least 3 characters in length",
                 },

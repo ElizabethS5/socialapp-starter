@@ -37,6 +37,30 @@ class ApiService {
     });
   };
 
+  updateUser = (username, updateData, token) => {
+    console.log("updating user...", username);
+    const url = `${this.usersUrl}/${username}`;
+    return this.client
+      .patch(url, updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  deleteUser = (username, token) => {
+    console.log("deleting user...", username);
+    const url = `${this.usersUrl}/${username}`;
+    return this.client
+      .delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   getUsers = () => {
     console.log("getting users...");
     const url = this.usersUrl + "?limit=10000";
@@ -91,6 +115,18 @@ class ApiService {
     return this.client.get(url).catch((error) => {
       console.log(error);
     });
+  };
+
+  deleteMessage = (messageId, token) => {
+    console.log("deleting message...", messageId);
+    const url = `${this.messagesUrl}/${messageId}`;
+    return this.client
+      .delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   like = (messageObj, token) => {

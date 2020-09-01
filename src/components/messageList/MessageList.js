@@ -36,6 +36,7 @@ class MessageList extends React.Component {
                 deleteLike={this.props.deleteLike}
                 token={this.props.token}
                 myUsername={this.props.myUsername}
+                deleteMessage={this.props.deleteMessage}
               />
             );
           })}

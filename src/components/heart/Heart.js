@@ -48,12 +48,12 @@ class Heart extends React.Component {
   toggleLike = () => {
     this.startLoad();
     if (!this.state.iLike) {
-      this.props.likeMessage(this.props.messageId, this.props.token);
+      this.props.likeMessage(this.props.messageId);
     } else {
       const myLike = this.props.likes.find(
         (like) => like.username === this.props.myUsername
       );
-      this.props.deleteLike(myLike.id, this.props.token, myLike.messageId);
+      this.props.deleteLike(myLike.id, myLike.messageId);
     }
     this.endLoad();
   };

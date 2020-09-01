@@ -1,9 +1,11 @@
 import React from "react";
+import "./Message.css";
 import TimeAgo from "react-timeago";
 import Heart from "../heart/Heart";
 import { Link } from "react-router-dom";
-import { Comment, Avatar } from "antd";
+import { Comment, Avatar, Button, Tooltip } from "antd";
 import logo from "../../logo.svg";
+import { CloseSquareOutlined } from "@ant-design/icons";
 
 class Message extends React.Component {
   render() {
@@ -32,6 +34,7 @@ class Message extends React.Component {
           }
           actions={[
             <Heart
+              key="like"
               loggedIn={this.props.loggedIn}
               iLike={this.props.data.iLike}
               number={this.props.data.likes.length}
@@ -42,6 +45,16 @@ class Message extends React.Component {
               likes={this.props.data.likes}
               myUsername={this.props.myUsername}
             />,
+            <Tooltip title="Delete">
+              <Button
+                className="Button"
+                key="delete"
+                hidden={this.props.myUsername !== this.props.data.username}
+                onClick={() => this.props.deleteMessage(this.props.data.id)}
+              >
+                <CloseSquareOutlined />
+              </Button>
+            </Tooltip>,
           ]}
         />
       </div>

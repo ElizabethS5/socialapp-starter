@@ -90,9 +90,9 @@ class App extends React.Component {
       });
   };
 
-  handleLogout = (token) => {
+  handleLogout = () => {
     this.client
-      .logout(token)
+      .logout(this.state.auth.token)
       .then((data) => {
         console.log(data.data);
         const auth = { ...this.state.auth };
@@ -158,13 +158,33 @@ class App extends React.Component {
   createMessage = () => {
     let text = this.state.newMessage.trim();
     if (text === "") return;
-    this.client.createMessage(text, this.state.auth.token).then((data) => {
-      console.log(data);
-      this.setState((currentState) => {
-        const messages = [data.data.message, ...currentState.messages];
-        return { messages };
+    this.client
+      .createMessage(text, this.state.auth.token)
+      .then((data) => {
+        console.log(data);
+        this.setState((currentState) => {
+          const messages = [data.data.message, ...currentState.messages];
+          return { messages };
+        });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    });
+  };
+
+  deleteMessage = (messageId) => {
+    this.client
+      .deleteMessage(messageId, this.state.auth.token)
+      .then((data) => {
+        console.log(data);
+        const messages = [...this.state.messages].filter(
+          (message) => message.id !== data.data.id
+        );
+        this.setState({ messages });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   getUsers = () => {
@@ -193,9 +213,50 @@ class App extends React.Component {
     this.setState({ selectUser: userObj });
   };
 
-  likeMessage = (messageId, token) => {
+  updateUser = (updateData) => {
     this.client
-      .like({ messageId: messageId }, token)
+      .updateUser(this.state.auth.username, updateData, this.state.auth.token)
+      .then((data) => {
+        this.setState({ selectedUser: data.data.user, newMessage: "" });
+      })
+      .catch((error) => {
+        console.log(console.error());
+      });
+  };
+
+  deleteUser = () => {
+    this.client
+      .deleteUser(this.state.auth.username, this.state.auth.token)
+      .then((data) => {
+        console.log(data);
+        const messages = [...this.state.messages].filter(
+          (message) => message.username !== data.data.username
+        );
+
+        this.setState({
+          auth: {
+            username: "",
+            token: "",
+            displayName: "",
+            password: "",
+            remember: false,
+          },
+          loggedIn: false,
+          messages,
+        });
+        if (localStorage.getItem("token")) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("username");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  likeMessage = (messageId) => {
+    this.client
+      .like({ messageId: messageId }, this.state.auth.token)
       .then((data) => {
         this.setState((currentState) => {
           const messages = [...currentState.messages];
@@ -212,9 +273,9 @@ class App extends React.Component {
       });
   };
 
-  deleteLike = (likeId, token, messageId) => {
+  deleteLike = (likeId, messageId) => {
     this.client
-      .deleteLike(likeId, token)
+      .deleteLike(likeId, this.state.auth.token)
       .then((data) => {
         console.log(data.data);
         this.setState((currentState) => {
@@ -284,6 +345,9 @@ class App extends React.Component {
                 deleteLike={this.deleteLike}
                 token={this.state.auth.token}
                 myUsername={this.state.auth.username}
+                updateUser={this.updateUser}
+                deleteUser={this.deleteUser}
+                deleteMessage={this.deleteMessage}
               />
             )}
           />
@@ -304,6 +368,7 @@ class App extends React.Component {
                 newMesage={this.state.newMessage}
                 handleNewMessageChange={this.handleNewMessageChange}
                 createMessage={this.createMessage}
+                deleteMessage={this.deleteMessage}
               />
             )}
           />
